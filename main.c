@@ -4,6 +4,7 @@
 void init(int, int[10][10], int[4][3]); // parameter for level id
 void getDir(int, int*, int*);
 int mod(int, int);
+void drawMirror(int, int, int);
 
 int main() {
 	InitWindow(800, 600, "Chromatron");
@@ -69,8 +70,7 @@ int main() {
 				}
 				else if (board[i][j] != 0 && board[i][j] <= 8) {
 					tempDir = (board[i][j] - 1) * 45;
-					DrawRectanglePro((Rectangle){j * 40 + 30, i * 40 + 30, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
-					DrawRectanglePro((Rectangle){j * 40 + 30, i * 40 + 30, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
+					drawMirror(j * 40 + 30, i * 40 + 30, tempDir);
 				}
 				else if (board[i][j] / 10 == 9) {
 					DrawText("S", j * 40 + 18, i * 40 + 12, 40, BLACK);
@@ -82,8 +82,7 @@ int main() {
 				if (tools[i][j] != 0 && tools[i][j] <= 8) {
 					tempDir = tools[i][j] - 1;
 					tempDir *= 45;
-					DrawRectanglePro((Rectangle){(800 - (3 - j) * 80) + 30, i * 80 + 45, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
-					DrawRectanglePro((Rectangle){(800 - (3 - j) * 80) + 30, i * 80 + 45, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
+					drawMirror((800 - (3 - j) * 80) + 30, i * 80 + 45, tempDir);
 //					DrawRectangle((800 - (3 - j) * 80) + 25, i * 60 + 30, 10, 40, BLACK);
 //					DrawRectangle((800 - (3 - j) * 80) + 35, i * 60 + 25, 5, 50, RED);
 				}
@@ -172,8 +171,7 @@ int main() {
 				mousex = GetMouseY();
 				tempDir = draggedWhat - 1;
 				tempDir *= 45;
-				DrawRectanglePro((Rectangle){mousey, mousex - 3, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
-				DrawRectanglePro((Rectangle){mousey, mousex - 3, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
+				drawMirror(mousey, mousex - 3, tempDir);
 //				DrawRectangle(mousey - 7, mousex - 20, 10, 40, BLACK);
 //				DrawRectangle(mousey + 3, mousex - 25, 5, 50, RED);
 			}
@@ -187,12 +185,21 @@ int main() {
 			mousex = GetMouseY();
 			mousey -= 10;
 			mousex -= 10;
-			mousey /= 40;
-			mousex /= 40;
-			if (mousex < 10 && mousex >= 0 && mousey < 10 && mousey >= 0) {
+			if (mousex / 40 < 10 && mousex / 40 >= 0 && mousey / 40 < 10 && mousey / 40 >= 0) {
+				mousey /= 40;
+				mousex /= 40;
 				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
 					board[mousex][mousey] %= 8;
 					board[mousex][mousey]++;
+				}
+			}
+			else if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
+				mousey -= 540;
+				mousey /= 80;
+				mousex /= 80;
+				if (tools[mousex][mousey] != 0 && tools[mousex][mousey] <= 8) {
+					tools[mousex][mousey] %= 8;
+					tools[mousex][mousey]++;
 				}
 			}
 		}
@@ -243,4 +250,9 @@ void getDir(int dir, int* dirx, int* diry) {
 
 int mod(int a, int b) {
 	return ((a % b) + b) % b;
+}
+
+void drawMirror(int y, int x, int dir) {
+	DrawRectanglePro((Rectangle){y, x, 40, 10}, (Vector2){20, 0}, 360 - dir, BLACK);
+	DrawRectanglePro((Rectangle){y, x, 50, 5}, (Vector2){25, 5}, 360 - dir, RED);
 }
