@@ -1,0 +1,20 @@
+chromatron
+tavola
+diviso in 3 parti
+1) game area
+2) tool area
+3) livelli
+nella game area che è divisa in una matrice come snake, sono presenti piccoli emettitori laser orizzontali, verticali o a 45° gradi
+il laser non può essere modificato
+in una posizione della game area c'è anche una stella che deve essere illuminata dal laser
+obbiettivo modificare raggio laser per raggiungere la stella
+tool area ci sono specchi
+con il mouse seleziono lo specchio e lo piazzo, se lo clicco lo ruota di 45°, il raggio laser colpisce lo specchio e colpisce la stella 
+
+livello uno semplice, un laser e un bersaglio
+quando si vince si clicca sul livello 2 nell'area livelli e hai 2 laser uno di colore blu e uno rosso
+stella rosso e stella blu
+
+nasce anche collinatore che li rimbalza con colore modificato
+
+quello che bisogna fare è fare l'interfaccia
