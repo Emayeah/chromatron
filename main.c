@@ -11,17 +11,21 @@ int main() {
 	SetTargetFPS(60);
 	int board[10][10]; // board del gioco, [height][width]
 	int tools[4][3]; // tall 4, wide 3
-	init(1, board, tools);
 	int dir, dirx, diry, posx, posy, tempDir, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
+	int maxStars;
+	int maxLevel = 1;
+	int currentLevel = 1;
 	int mousex, mousey;
+	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		ClearBackground(WHITE);
+		maxStars = 0;
 		winCount = 0;
-		flag = 0;
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				DrawRectangleLines(j * 40 + 10, i * 40 + 10, 40, 40, LIGHTGRAY);
+				maxStars++;
 			}
 		}
 		for (int i = 0; i < 4; i++) {
@@ -38,15 +42,16 @@ int main() {
 					posx = i;
 					posy = j;
 					bakWincount = winCount;
+					flag = 0;
 					while (posx + dirx < 10 && posx + dirx >= 0 && posy + diry < 10 && posy + diry >= 0 && bakWincount == winCount && flag == 0) {
 						posx += dirx;
 						posy += diry;
 						if (board[posx][posy] == 0) {
-							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (40 + 28.28f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff))), 10}, (Vector2){20 + 14.14f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (40 + 28.28f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
 							// true == 1, false == 0, if both are 1 then the line needs to be longer
 						}
 						else if (board[posx][posy] <= 8) {
-							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff))), 10}, (Vector2){20 + 14.14f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
 							tempDir = board[posx][posy] - 1;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir) {
@@ -54,7 +59,7 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff))), 10}, (Vector2){20 + 14.14f * ((dirx & 0x7fffffff) == (diry & 0x7fffffff)), 5}, 180 - dir, BLACK);
+								DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx * dirx) == (diry *  diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 180 - dir, BLACK);
 							}
 							else {
 								flag = 1;
@@ -68,12 +73,16 @@ int main() {
 						}
 					}
 				}
-				else if (board[i][j] != 0 && board[i][j] <= 8) {
-					tempDir = (board[i][j] - 1) * 45;
-					drawMirror(j * 40 + 30, i * 40 + 30, tempDir);
-				}
 				else if (board[i][j] / 10 == 9) {
 					DrawText("S", j * 40 + 18, i * 40 + 12, 40, BLACK);
+				}
+			}
+		}
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (board[i][j] != 0 && board[i][j] <= 8) {
+					tempDir = (board[i][j] - 1) * 45;
+					drawMirror(j * 40 + 30, i * 40 + 30, tempDir);
 				}
 			}
 		}
@@ -86,6 +95,19 @@ int main() {
 //					DrawRectangle((800 - (3 - j) * 80) + 25, i * 60 + 30, 10, 40, BLACK);
 //					DrawRectangle((800 - (3 - j) * 80) + 35, i * 60 + 25, 5, 50, RED);
 				}
+			}
+		}
+		for (int i = 1; i <= 4; i++) {
+			if (i <= maxLevel) {
+				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, RED);
+			}
+			else {
+				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, BLACK);
+			}
+		}
+		if (winCount == maxStars) {
+			if (maxLevel == currentLevel) {
+				maxLevel++;
 			}
 		}
 		if (IsMouseButtonPressed(0)) {
@@ -119,10 +141,10 @@ int main() {
 				}
 			}
 		}
-		if (pressed != 0) {
-			if (IsMouseButtonUp(0)) {
-				mousey = GetMouseX();
-				mousex = GetMouseY();
+		if (IsMouseButtonReleased(0)) {
+			mousey = GetMouseX();
+			mousex = GetMouseY();
+			if (pressed != 0) {
 				mousey -= 10;
 				mousex -= 10;
 				if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
@@ -166,18 +188,22 @@ int main() {
 				}
 				pressed = 0;
 			}
-			else if (pressed != 0) {
-				mousey = GetMouseX();
-				mousex = GetMouseY();
-				tempDir = draggedWhat - 1;
-				tempDir *= 45;
-				drawMirror(mousey, mousex - 3, tempDir);
-//				DrawRectangle(mousey - 7, mousex - 20, 10, 40, BLACK);
-//				DrawRectangle(mousey + 3, mousex - 25, 5, 50, RED);
+			else if (mousex >= 500 && mousex <= 580 && mousey >= 250 && mousey <= 570) {
+				mousey -= 250;
+				mousey /= 80;
+				mousey++;
+				if (mousey <= maxLevel) {
+					currentLevel = mousey;
+					init(currentLevel, board, tools);
+				}
 			}
 		}
-		if (winCount == 1) {
-			DrawText("you win!!", 400, 400, 20, BLACK);
+		else if (IsMouseButtonDown(0) && pressed != 0) {
+			mousey = GetMouseX();
+			mousex = GetMouseY();
+			tempDir = draggedWhat - 1;
+			tempDir *= 45;
+			drawMirror(mousey, mousex - 3, tempDir);
 		}
 		EndDrawing();
 		if (IsMouseButtonReleased(1)) {
@@ -222,6 +248,29 @@ void init(int id, int board[10][10], int tool[4][3]) {
 		board[5][3] = 10;
 		board[1][8] = 90;
 		tool[0][0] = 1;
+	}
+	else if (id == 2) {
+		board[5][7] = 10;
+		board[1][2] = 90;
+		tool[0][0] = 1;
+		tool[0][1] = 1;
+	}
+	else if (id == 3) {
+		board[5][5] = 20;
+		board[1][1] = 90;
+		tool[0][0] = 1;
+		tool[0][1] = 1;
+		tool[0][2] = 1;
+	}
+	else if (id == 4) {
+		board[5][7] = 40;
+		board[2][3] = 40;
+		board[4][8] = 90;
+		board[9][8] = 90;
+		tool[0][0] = 1;
+		tool[0][1] = 1;
+		tool[0][2] = 1;
+		tool[0][3] = 1;
 	}
 }
 
