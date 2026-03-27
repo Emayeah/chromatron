@@ -9,9 +9,9 @@ int main() {
 	InitWindow(800, 600, "Chromatron");
 	SetTargetFPS(60);
 	int board[10][10]; // board del gioco, [height][width]
-	int tool[4][3]; // tall 4, wide 3
-	init(1, board, tool);
-	int dir, dirx, diry, posx, posy, tempDir, bakWincount, winCount, flag;
+	int tools[4][3]; // tall 4, wide 3
+	init(1, board, tools);
+	int dir, dirx, diry, posx, posy, tempDir, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
 	int mousex, mousey;
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -21,6 +21,11 @@ int main() {
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				DrawRectangleLines(j * 40 + 10, i * 40 + 10, 40, 40, LIGHTGRAY);
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
+				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, LIGHTGRAY);
 			}
 		}
 		for (int i = 0; i < 10; i++) {
@@ -67,6 +72,110 @@ int main() {
 					DrawRectanglePro((Rectangle){j * 40 + 30, i * 40 + 30, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
 					DrawRectanglePro((Rectangle){j * 40 + 30, i * 40 + 30, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
 				}
+				else if (board[i][j] / 10 == 9) {
+					DrawText("S", j * 40 + 18, i * 40 + 12, 40, BLACK);
+				}
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (tools[i][j] != 0 && tools[i][j] <= 8) {
+					tempDir = tools[i][j] - 1;
+					tempDir *= 45;
+					DrawRectanglePro((Rectangle){(800 - (3 - j) * 80) + 30, i * 80 + 45, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
+					DrawRectanglePro((Rectangle){(800 - (3 - j) * 80) + 30, i * 80 + 45, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
+//					DrawRectangle((800 - (3 - j) * 80) + 25, i * 60 + 30, 10, 40, BLACK);
+//					DrawRectangle((800 - (3 - j) * 80) + 35, i * 60 + 25, 5, 50, RED);
+				}
+			}
+		}
+		if (IsMouseButtonPressed(0)) {
+			mousey = GetMouseX();
+			mousex = GetMouseY();
+			mousey -= 10;
+			mousex -= 10;
+			if (mod(mousex, 600) <= 320 && mod(mousey, 800) >= 540) {
+				mousey -= 540;
+				if (mousex / 80 >= 0 && mousex / 80 < 4 && mousey / 80 >= 0 && mousey / 80 < 3) {
+					mousex /= 80;
+					mousey /= 80;
+					if (tools[mousex][mousey] != 0) {
+						pressed = 1;
+						draggedWhat = tools[mousex][mousey];
+						tools[mousex][mousey] = 0;
+						draggedx = mousex;
+						draggedy = mousey;
+					}
+				}
+			}
+			else if (mousex / 40 >= 0 && mousex / 40 < 10 && mousey / 40 >= 0 && mousey / 40 < 10) {
+				mousey /= 40;
+				mousex /= 40;
+				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
+					pressed = 2;
+					draggedWhat = board[mousex][mousey];
+					board[mousex][mousey] = 0;
+					draggedx = mousex;
+					draggedy = mousey;
+				}
+			}
+		}
+		if (pressed != 0) {
+			if (IsMouseButtonUp(0)) {
+				mousey = GetMouseX();
+				mousex = GetMouseY();
+				mousey -= 10;
+				mousex -= 10;
+				if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
+					mousey -= 540;
+					mousey /= 80;
+					mousex /= 80;
+					if (tools[mousex][mousey] == 0) {
+						tools[mousex][mousey] = draggedWhat;
+					}
+					else {
+						if (pressed == 1) {
+							tools[draggedx][draggedy] = draggedWhat;
+						}
+						else if (pressed == 2) {
+							board[draggedx][draggedy] = draggedWhat;
+						}
+					}
+				}
+				else if (mousex / 40 >= 0 && mousex / 40 < 10 && mousey / 40 >= 0 && mousey / 40 < 10) {
+					mousey /= 40;
+					mousex /= 40;
+					if (board[mousex][mousey] == 0) {
+						board[mousex][mousey] = draggedWhat;
+					}
+					else {
+						if (pressed == 1) {
+							tools[draggedx][draggedy] = draggedWhat;
+						}
+						else if (pressed == 2) {
+							board[draggedx][draggedy] = draggedWhat;
+						}
+					}
+				}
+				else {
+					if (pressed == 1) {
+						tools[draggedx][draggedy] = draggedWhat;
+					}
+					else if (pressed == 2) {
+						board[draggedx][draggedy] = draggedWhat;
+					}
+				}
+				pressed = 0;
+			}
+			else if (pressed != 0) {
+				mousey = GetMouseX();
+				mousex = GetMouseY();
+				tempDir = draggedWhat - 1;
+				tempDir *= 45;
+				DrawRectanglePro((Rectangle){mousey, mousex - 3, 40, 10}, (Vector2){20, 5}, 360 - tempDir, BLACK);
+				DrawRectanglePro((Rectangle){mousey, mousex - 3, 50, 5}, (Vector2){25, -5}, 360 - tempDir, RED);
+//				DrawRectangle(mousey - 7, mousex - 20, 10, 40, BLACK);
+//				DrawRectangle(mousey + 3, mousex - 25, 5, 50, RED);
 			}
 		}
 		if (winCount == 1) {
@@ -80,7 +189,7 @@ int main() {
 			mousex -= 10;
 			mousey /= 40;
 			mousex /= 40;
-			if (mousex < 10 && mousey < 10) {
+			if (mousex < 10 && mousex >= 0 && mousey < 10 && mousey >= 0) {
 				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
 					board[mousex][mousey] %= 8;
 					board[mousex][mousey]++;
@@ -104,7 +213,6 @@ void init(int id, int board[10][10], int tool[4][3]) {
 	}
 	if (id == 1) {
 		board[5][3] = 10;
-		board[5][8] = 2;
 		board[1][8] = 90;
 		tool[0][0] = 1;
 	}
