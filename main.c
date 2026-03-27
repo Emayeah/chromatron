@@ -25,7 +25,9 @@ int main() {
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				DrawRectangleLines(j * 40 + 10, i * 40 + 10, 40, 40, LIGHTGRAY);
-				maxStars++;
+				if (board[i][j] / 10 == 9) {
+					maxStars++;
+				}
 			}
 		}
 		for (int i = 0; i < 4; i++) {
