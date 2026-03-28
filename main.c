@@ -49,11 +49,11 @@ int main() {
 						posx += dirx;
 						posy += diry;
 						if (board[posx][posy] == 0) {
-							DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, BLACK);
 							// true == 1, false == 0, if both are 1 then the line needs to be longer
 						}
 						else if (board[posx][posy] <= 8) {
-							DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, BLACK);
 							tempDir = board[posx][posy] - 1;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir) {
@@ -61,7 +61,7 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 27.7f * ((dirx * dirx) == (diry *  diry))), 10}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 180 - dir, BLACK);
+								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, BLACK);
 							}
 							else {
 								flag = 1;
@@ -76,7 +76,7 @@ int main() {
 					}
 				}
 				else if (board[i][j] / 10 == 9) {
-					DrawText("S", j * 20 + 18, i * 20 + 12, 40, BLACK);
+					DrawText("S", j * 25 + 16, i * 25 + 14, 20, BLACK);
 				}
 			}
 		}
@@ -84,7 +84,7 @@ int main() {
 			for (int j = 0; j < 15; j++) {
 				if (board[i][j] != 0 && board[i][j] <= 8) {
 					tempDir = (board[i][j] - 1) * 45;
-					drawMirror(j * 20 + 30, i * 20 + 30, tempDir);
+					drawMirror(j * 25 + 22, i * 25 + 22, tempDir);
 				}
 			}
 		}
@@ -304,6 +304,6 @@ int mod(int a, int b) {
 }
 
 void drawMirror(int y, int x, int dir) {
-	DrawRectanglePro((Rectangle){y, x, 40, 10}, (Vector2){20, 0}, 360 - dir, BLACK);
-	DrawRectanglePro((Rectangle){y, x, 50, 5}, (Vector2){25, 5}, 360 - dir, RED);
+	DrawRectanglePro((Rectangle){y, x, 20, 10}, (Vector2){10, 0}, 360 - dir, BLACK);
+	DrawRectanglePro((Rectangle){y, x, 30, 5}, (Vector2){15, 5}, 360 - dir, RED);
 }
