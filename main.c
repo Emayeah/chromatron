@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include <stdio.h>
 
-void init(int, int[10][10], int[4][3]); // parameter for level id
+void init(int, int[15][15], int[4][3]); // parameter for level id
 void getDir(int, int*, int*);
 int mod(int, int);
 void drawMirror(int, int, int);
@@ -9,7 +9,7 @@ void drawMirror(int, int, int);
 int main() {
 	InitWindow(800, 600, "Chromatron");
 	SetTargetFPS(60);
-	int board[10][10]; // board del gioco, [height][width]
+	int board[15][15]; // board del gioco, [height][width]
 	int tools[4][3]; // tall 4, wide 3
 	int dir, dirx, diry, posx, posy, tempDir, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
 	int maxStars;
@@ -22,9 +22,9 @@ int main() {
 		ClearBackground(WHITE);
 		maxStars = 0;
 		winCount = 0;
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				DrawRectangleLines(j * 40 + 10, i * 40 + 10, 40, 40, LIGHTGRAY);
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				DrawRectangleLines(j * 25 + 10, i * 25 + 10, 25, 25, LIGHTGRAY);
 				if (board[i][j] / 10 == 9) {
 					maxStars++;
 				}
@@ -35,8 +35,8 @@ int main() {
 				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, LIGHTGRAY);
 			}
 		}
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
 				if (mod(board[i][j] / 10 - 1, 10) < 8) {
 					dir = board[i][j] / 10 - 1;
 					getDir(dir, &dirx, &diry);
@@ -45,15 +45,15 @@ int main() {
 					posy = j;
 					bakWincount = winCount;
 					flag = 0;
-					while (posx + dirx < 10 && posx + dirx >= 0 && posy + diry < 10 && posy + diry >= 0 && bakWincount == winCount && flag == 0) {
+					while (posx + dirx < 15 && posx + dirx >= 0 && posy + diry < 15 && posy + diry >= 0 && bakWincount == winCount && flag == 0) {
 						posx += dirx;
 						posy += diry;
 						if (board[posx][posy] == 0) {
-							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (40 + 28.28f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
 							// true == 1, false == 0, if both are 1 then the line needs to be longer
 						}
 						else if (board[posx][posy] <= 8) {
-							DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 10}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 360 - dir, BLACK);
 							tempDir = board[posx][posy] - 1;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir) {
@@ -61,7 +61,7 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 40 + 30, posx * 40 + 30, (20 + 14.14f * ((dirx * dirx) == (diry *  diry))), 10}, (Vector2){20 + 14.14f * ((dirx * dirx) == (diry * diry)), 5}, 180 - dir, BLACK);
+								DrawRectanglePro((Rectangle){posy * 25 + 30, posx * 25 + 30, (25 + 27.7f * ((dirx * dirx) == (diry *  diry))), 10}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 5}, 180 - dir, BLACK);
 							}
 							else {
 								flag = 1;
@@ -76,15 +76,15 @@ int main() {
 					}
 				}
 				else if (board[i][j] / 10 == 9) {
-					DrawText("S", j * 40 + 18, i * 40 + 12, 40, BLACK);
+					DrawText("S", j * 20 + 18, i * 20 + 12, 40, BLACK);
 				}
 			}
 		}
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
 				if (board[i][j] != 0 && board[i][j] <= 8) {
 					tempDir = (board[i][j] - 1) * 45;
-					drawMirror(j * 40 + 30, i * 40 + 30, tempDir);
+					drawMirror(j * 20 + 30, i * 20 + 30, tempDir);
 				}
 			}
 		}
@@ -131,9 +131,9 @@ int main() {
 					}
 				}
 			}
-			else if (mousex / 40 >= 0 && mousex / 40 < 10 && mousey / 40 >= 0 && mousey / 40 < 10) {
-				mousey /= 40;
-				mousex /= 40;
+			else if (mousex / 25 >= 0 && mousex / 25 < 15 && mousey / 25 >= 0 && mousey / 25 < 15) {
+				mousey /= 25;
+				mousex /= 25;
 				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
 					pressed = 2;
 					draggedWhat = board[mousex][mousey];
@@ -165,9 +165,9 @@ int main() {
 						}
 					}
 				}
-				else if (mousex / 40 >= 0 && mousex / 40 < 10 && mousey / 40 >= 0 && mousey / 40 < 10) {
-					mousey /= 40;
-					mousex /= 40;
+				else if (mousex / 25 >= 0 && mousex / 25 < 15 && mousey / 25 >= 0 && mousey / 25 < 15) {
+					mousey /= 25;
+					mousex /= 25;
 					if (board[mousex][mousey] == 0) {
 						board[mousex][mousey] = draggedWhat;
 					}
@@ -213,9 +213,9 @@ int main() {
 			mousex = GetMouseY();
 			mousey -= 10;
 			mousex -= 10;
-			if (mousex / 40 < 10 && mousex / 40 >= 0 && mousey / 40 < 10 && mousey / 40 >= 0) {
-				mousey /= 40;
-				mousex /= 40;
+			if (mousex / 25 < 15 && mousex / 25 >= 0 && mousey / 25 < 15 && mousey / 25 >= 0) {
+				mousey /= 25;
+				mousex /= 25;
 				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
 					board[mousex][mousey] %= 8;
 					board[mousex][mousey]++;
@@ -235,9 +235,9 @@ int main() {
 	CloseWindow();
 }
 
-void init(int id, int board[10][10], int tool[4][3]) {
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+void init(int id, int board[15][15], int tool[4][3]) {
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 15; j++) {
 			board[i][j] = 0;
 		}
 	}
