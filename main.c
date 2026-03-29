@@ -16,12 +16,16 @@ int main() {
 	int maxLevel = 1;
 	int currentLevel = 1;
 	int mousex, mousey;
+	Color color;
+	Color colors[] = {RED, GREEN, BLUE};
+	bool cantWin;
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		ClearBackground(WHITE);
 		maxStars = 0;
 		winCount = 0;
+		cantWin = 0;
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				DrawRectangleLines(j * 25 + 10, i * 25 + 10, 25, 25, LIGHTGRAY);
@@ -38,6 +42,7 @@ int main() {
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				if (mod(board[i][j] / 10 - 1, 10) < 8) {
+					color = colors[board[i][j] % 10];
 					dir = board[i][j] / 10 - 1;
 					getDir(dir, &dirx, &diry);
 					dir *= 45;
@@ -45,15 +50,15 @@ int main() {
 					posy = j;
 					bakWincount = winCount;
 					flag = 0;
-					while (posx + dirx < 15 && posx + dirx >= 0 && posy + diry < 15 && posy + diry >= 0 && bakWincount == winCount && flag == 0) {
+					while (posx + dirx < 15 && posx + dirx >= 0 && posy + diry < 15 && posy + diry >= 0 && flag == 0) {
 						posx += dirx;
 						posy += diry;
 						if (board[posx][posy] == 0) {
-							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
 							// true == 1, false == 0, if both are 1 then the line needs to be longer
 						}
 						else if (board[posx][posy] <= 8) {
-							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, BLACK);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
 							tempDir = board[posx][posy] - 1;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir) {
@@ -61,14 +66,19 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, BLACK);
+								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, color);
 							}
 							else {
 								flag = 1;
 							}
 						}
 						else if (board[posx][posy] / 10 == 9) {
-							winCount++;
+							if (board[i][j] % 10 == board[posx][posy] % 10) {
+								winCount++;
+							}
+							else {
+								cantWin = 1;
+							}
 						}
 						else {
 							flag = 1;
@@ -76,7 +86,7 @@ int main() {
 					}
 				}
 				else if (board[i][j] / 10 == 9) {
-					DrawText("S", j * 25 + 16, i * 25 + 14, 20, BLACK);
+					DrawText("S", j * 25 + 16, i * 25 + 14, 20, colors[board[i][j] % 10]);
 				}
 			}
 		}
@@ -107,7 +117,7 @@ int main() {
 				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, BLACK);
 			}
 		}
-		if (winCount == maxStars) {
+		if (winCount == maxStars && cantWin == 0) {
 			if (maxLevel == currentLevel) {
 				maxLevel++;
 			}
@@ -247,15 +257,18 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		}
 	}
 	if (id == 1) {
-		board[5][3] = 10;
-		board[1][8] = 90;
+		board[7][2] = 10;
+		board[2][8] = 90;
 		tool[0][0] = 1;
 	}
 	else if (id == 2) {
-		board[5][7] = 10;
-		board[1][2] = 90;
+		board[8][3] = 10;
+		board[6][12] = 52;
+		board[6][8] = 90;
+		board[9][7] = 92;
 		tool[0][0] = 1;
 		tool[0][1] = 1;
+		tool[0][2] = 1;
 	}
 	else if (id == 3) {
 		board[5][5] = 20;
