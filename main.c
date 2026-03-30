@@ -12,7 +12,8 @@ int main() {
 	SetTargetFPS(60);
 	int board[15][15]; // board del gioco, [height][width]
 	int tools[4][3]; // tall 4, wide 3
-	int dir, dirx, diry, posx, posy, tempDir, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
+	int dir, dirx, diry, posx, posy, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
+	float tempDir;
 	int maxStars;
 	int maxLevel = 1;
 	int currentLevel = 1;
@@ -73,6 +74,25 @@ int main() {
 								flag = 1;
 							}
 						}
+						else if (board[posx][posy] / 10 == 10) {
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
+							tempDir = board[posx][posy] - 101;
+							dir /= 45;
+							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir || mod(dir, 8) == tempDir) {
+								dir *= 45;
+								tempDir *= 45;
+								tempDir += 22.5;
+								dir = tempDir * 2 - dir;
+								dir /= 45;
+								dir = mod(dir, 8);
+								getDir(dir, &dirx, &diry);
+								dir *= 45;
+								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, color);
+							}
+							else {
+								flag = 1;
+							}
+						}
 						else if (board[posx][posy] / 10 == 9) {
 							if (board[i][j] % 10 == board[posx][posy] % 10) {
 								winCount++;
@@ -96,6 +116,10 @@ int main() {
 				if (board[i][j] != 0 && board[i][j] <= 8) {
 					tempDir = (board[i][j] - 1) * 45;
 					drawMirror(j * 25 + 22, i * 25 + 22, tempDir);
+				}
+				else if (board[i][j] != 0 && board[i][j] / 10 == 10) {
+					tempDir = (board[i][j] - 101) * 45 + 22.5;
+					drawReflector(j * 25 + 22, i * 25 + 22, tempDir);
 				}
 			}
 		}
@@ -145,7 +169,7 @@ int main() {
 			else if (mousex / 25 >= 0 && mousex / 25 < 15 && mousey / 25 >= 0 && mousey / 25 < 15) {
 				mousey /= 25;
 				mousex /= 25;
-				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
+				if (board[mousex][mousey] != 0 && (board[mousex][mousey] <= 8 || board[mousex][mousey] / 10 == 10)) {
 					pressed = 2;
 					draggedWhat = board[mousex][mousey];
 					board[mousex][mousey] = 0;
@@ -215,8 +239,15 @@ int main() {
 			mousey = GetMouseX();
 			mousex = GetMouseY();
 			tempDir = draggedWhat - 1;
-			tempDir *= 45;
-			drawMirror(mousey, mousex - 3, tempDir);
+			if (draggedWhat >= 100) {
+				tempDir -= 100;
+				tempDir *= 45;
+				drawReflector(mousey, mousex - 3, tempDir + 25);
+			}
+			else {
+				tempDir *= 45;
+				drawMirror(mousey, mousex - 3, tempDir);
+			}
 		}
 		EndDrawing();
 		if (IsMouseButtonReleased(1)) {
@@ -230,6 +261,11 @@ int main() {
 				if (board[mousex][mousey] != 0 && board[mousex][mousey] <= 8) {
 					board[mousex][mousey] %= 8;
 					board[mousex][mousey]++;
+				}
+				else if (board[mousex][mousey] != 0 && board[mousex][mousey] / 10 == 10) {
+					board[mousex][mousey] -= 100;
+					board[mousex][mousey] %= 8;
+					board[mousex][mousey] += 101;
 				}
 			}
 			else if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
@@ -275,6 +311,7 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		board[5][5] = 20;
 		board[1][1] = 90;
 		tool[0][0] = 1;
+		tool[0][3] = 101;
 		tool[0][1] = 1;
 		tool[0][2] = 1;
 	}
