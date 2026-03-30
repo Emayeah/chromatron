@@ -5,6 +5,7 @@ void init(int, int[15][15], int[4][3]); // parameter for level id
 void getDir(int, int*, int*);
 int mod(int, int);
 void drawMirror(int, int, int);
+void drawReflector(int, int, int);
 
 int main() {
 	InitWindow(800, 600, "Chromatron");
@@ -316,7 +317,13 @@ int mod(int a, int b) {
 	return ((a % b) + b) % b;
 }
 
-void drawMirror(int y, int x, int dir) {
+void drawReflector(int y, int x, int dir) {
 	DrawRectanglePro((Rectangle){y, x, 20, 10}, (Vector2){10, 0}, 360 - dir, BLACK);
 	DrawRectanglePro((Rectangle){y, x, 30, 5}, (Vector2){15, 5}, 360 - dir, RED);
+}
+
+
+void drawMirror(int y, int x, int dir) {
+	DrawRectanglePro((Rectangle){y, x, 30, 10}, (Vector2){15, 5}, 360 - dir, BLACK);
+	DrawRectanglePro((Rectangle){y, x, 24, 5}, (Vector2){12, 5}, 360 - dir, RED);
 }
