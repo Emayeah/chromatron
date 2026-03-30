@@ -132,6 +132,11 @@ int main() {
 //					DrawRectangle((800 - (3 - j) * 80) + 25, i * 60 + 30, 10, 40, BLACK);
 //					DrawRectangle((800 - (3 - j) * 80) + 35, i * 60 + 25, 5, 50, RED);
 				}
+				else if (tools[i][j] != 0 && tools[i][j] / 10 == 10) {
+					tempDir = tools[i][j] - 101;
+					tempDir *= 45;
+					drawReflector((800 - (3 - j) * 80) + 30, i * 80 + 50, tempDir + 22.5);
+				}
 			}
 		}
 		for (int i = 1; i <= 4; i++) {
@@ -242,7 +247,7 @@ int main() {
 			if (draggedWhat >= 100) {
 				tempDir -= 100;
 				tempDir *= 45;
-				drawReflector(mousey, mousex - 3, tempDir + 25);
+				drawReflector(mousey, mousex - 3, tempDir + 22.5);
 			}
 			else {
 				tempDir *= 45;
@@ -276,6 +281,11 @@ int main() {
 					tools[mousex][mousey] %= 8;
 					tools[mousex][mousey]++;
 				}
+				else if (tools[mousex][mousey] != 0 && tools[mousex][mousey] / 10 == 10) {
+					tools[mousex][mousey] -= 100;
+					tools[mousex][mousey] %= 8;
+					tools[mousex][mousey] += 101;
+				}
 			}
 		}
 	}
@@ -297,6 +307,7 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		board[7][2] = 10;
 		board[2][8] = 90;
 		tool[0][0] = 1;
+		tool[0][3] = 101;
 	}
 	else if (id == 2) {
 		board[8][3] = 10;
