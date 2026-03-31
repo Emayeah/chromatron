@@ -28,13 +28,21 @@ int main() {
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
-		ClearBackground(WHITE);
+		ClearBackground(LIGHTGRAY);
 		maxStars = 0;
 		winCount = 0;
 		cantWin = 0;
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
-				DrawRectangleLines(j * 25 + 10, i * 25 + 10, 25, 25, LIGHTGRAY);
+				DrawRectangle(j * 25 + 10, i * 25 + 10, 25, 25, GRAY);
+				if (board[i][j] / 10 == 9) {
+					maxStars++;
+				}
+			}
+		}
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				DrawRectangleLines(j * 25 + 10, i * 25 + 10, 25, 25, BROWN);
 				if (board[i][j] / 10 == 9) {
 					maxStars++;
 				}
@@ -46,7 +54,12 @@ int main() {
 		}
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 3; j++) {
-				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, LIGHTGRAY);
+				DrawRectangle((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, GRAY);
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
+				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, BROWN);
 			}
 		}
 		for (int i = 0; i < 15; i++) {
