@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void init(int, int[15][15], int[4][3]); // parameter for level id
 void getDir(int, int*, int*);
@@ -19,8 +20,11 @@ int main() {
 	int currentLevel = 1;
 	int mousex, mousey;
 	Color color;
-	Color colors[] = {RED, GREEN, BLUE};
+	Color colors[] = {RED, GREEN, BLUE, WHITE, PURPLE, SKYBLUE, YELLOW};
 	bool cantWin;
+	int index;
+	int flag2;
+	char *colorFlags;
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -36,6 +40,10 @@ int main() {
 				}
 			}
 		}
+		colorFlags = malloc(maxStars * sizeof(unsigned char) * 4);
+		for (int i = 0; i < maxStars * 4; i++) {
+			colorFlags[i] = 0;
+		}
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 3; j++) {
 				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, LIGHTGRAY);
@@ -50,7 +58,6 @@ int main() {
 					dir *= 45;
 					posx = i;
 					posy = j;
-					bakWincount = winCount;
 					flag = 0;
 					while (posx + dirx < 15 && posx + dirx >= 0 && posy + diry < 15 && posy + diry >= 0 && flag == 0) {
 						posx += dirx;
@@ -94,12 +101,20 @@ int main() {
 							}
 						}
 						else if (board[posx][posy] / 10 == 9) {
-							if (board[i][j] % 10 == board[posx][posy] % 10) {
-								winCount++;
+							index = 0;
+							flag2 = 0;
+							for (int k = 0; k < 15 && flag2 == 0; k++) {
+								for (int l = 0; l < 15 && flag2 == 0; l++) {
+									if (board[k][l] / 10 == 9) {
+										index++;
+									}
+									if (k == posx && l == posy) {
+										flag2 = 1;
+										index--;
+									}
+								}
 							}
-							else {
-								cantWin = 1;
-							}
+							colorFlags[index * 4 + (board[i][j] % 10)] = 1;
 						}
 						else {
 							flag = 1;
@@ -111,6 +126,78 @@ int main() {
 				}
 			}
 		}
+		index = 0;
+		cantWin = 0;
+		for (int i = 0; i < 15 && cantWin == 0; i++) {
+			for (int j = 0; j < 15 && cantWin == 0; j++) {
+				if (board[i][j] / 10 == 9) {
+					if (
+						board[i][j] % 10 == 0 &&
+						colorFlags[index * 4] == 1 &&
+						colorFlags[index * 4 + 1] == 0 &&
+						colorFlags[index * 4 + 2] == 0 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 1 &&
+						colorFlags[index * 4] == 0 &&
+						colorFlags[index * 4 + 1] == 1 &&
+						colorFlags[index * 4 + 2] == 0 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 2 &&
+						colorFlags[index * 4] == 0 &&
+						colorFlags[index * 4 + 1] == 0 &&
+						colorFlags[index * 4 + 2] == 1 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 3 &&
+						((
+						colorFlags[index * 4] == 1 &&
+						colorFlags[index * 4 + 1] == 1 &&
+						colorFlags[index * 4 + 2] == 1
+						) ||
+						colorFlags[index * 4 + 3] == 1
+						)
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 4 &&	// purple
+						colorFlags[index * 4] == 1 &&
+						colorFlags[index * 4 + 1] == 0 &&
+						colorFlags[index * 4 + 2] == 1 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 5 &&	// cyan
+						colorFlags[index * 4] == 0 &&
+						colorFlags[index * 4 + 1] == 1 &&
+						colorFlags[index * 4 + 2] == 1 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else if (
+						board[i][j] % 10 == 6 &&	// yellow
+						colorFlags[index * 4] == 1 &&
+						colorFlags[index * 4 + 1] == 1 &&
+						colorFlags[index * 4 + 2] == 0 &&
+						colorFlags[index * 4 + 3] == 0
+					) {
+					}
+					else {
+						cantWin = 1;
+					}
+					index++;
+				}
+			}
+		}
+		free(colorFlags);
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				if (board[i][j] != 0 && board[i][j] <= 8) {
@@ -147,7 +234,7 @@ int main() {
 				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, BLACK);
 			}
 		}
-		if (winCount == maxStars && cantWin == 0) {
+		if (cantWin == 0) {
 			if (maxLevel == currentLevel) {
 				maxLevel++;
 			}
@@ -307,7 +394,6 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		board[7][2] = 10;
 		board[2][8] = 90;
 		tool[0][0] = 1;
-		tool[0][3] = 101;
 	}
 	else if (id == 2) {
 		board[8][3] = 10;
@@ -319,10 +405,13 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		tool[0][2] = 1;
 	}
 	else if (id == 3) {
-		board[5][5] = 20;
-		board[1][1] = 90;
+		board[3][0] = 82;
+		board[11][14] = 50;
+		board[14][3] = 21;
+		board[4][7] = 96;
+		board[6][9] = 95;
+		board[8][7] = 94;
 		tool[0][0] = 1;
-		tool[0][3] = 101;
 		tool[0][1] = 1;
 		tool[0][2] = 1;
 	}
