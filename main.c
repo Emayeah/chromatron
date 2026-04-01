@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void init(int, int[15][15], int[4][3]); // parameter for level id
+void init(int, int[15][15], int[4][6]); // parameter for level id
 void getDir(int, int*, int*);
 int mod(int, int);
 void drawMirror(int, int, int);
@@ -13,7 +13,7 @@ int main() {
 	InitWindow(800, 600, "Chromatron");
 	SetTargetFPS(60);
 	int board[15][15]; // board del gioco, [height][width]
-	int tools[4][3]; // tall 4, wide 3
+	int tools[4][6]; // tall 4, wide 6
 	int dir, dirx, diry, posx, posy, bakWincount, winCount, flag, pressed = 0, draggedWhat, draggedx, draggedy;
 	float tempDir;
 	int maxStars;
@@ -26,6 +26,7 @@ int main() {
 	int index;
 	int flag2;
 	char *colorFlags;
+	int levelAmount;
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -54,13 +55,13 @@ int main() {
 			colorFlags[i] = 0;
 		}
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
-				DrawRectangle((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, GRAY);
+			for (int j = 0; j < 6; j++) {
+				DrawRectangle((800 - (6 - j) * 25) - 10, i * 25 + 10, 25, 25, GRAY);
 			}
 		}
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
-				DrawRectangleLines((800 - (3 - j) * 80) - 10, i * 80 + 10, 80, 80, BROWN);
+			for (int j = 0; j < 6; j++) {
+				DrawRectangleLines((800 - (6 - j) * 25) - 10, i * 25 + 10, 25, 25, BROWN);
 			}
 		}
 		for (int i = 0; i < 15; i++) {
@@ -229,27 +230,28 @@ int main() {
 			}
 		}
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
+			for (int j = 0; j < 6; j++) {
 				if (tools[i][j] != 0 && tools[i][j] <= 8) {
 					tempDir = tools[i][j] - 1;
 					tempDir *= 45;
-					drawMirror((800 - (3 - j) * 80) + 30, i * 80 + 45, tempDir);
+					drawMirror((800 - (6 - j) * 25) + 2, i * 25 + 20, tempDir);
 //					DrawRectangle((800 - (3 - j) * 80) + 25, i * 60 + 30, 10, 40, BLACK);
 //					DrawRectangle((800 - (3 - j) * 80) + 35, i * 60 + 25, 5, 50, RED);
 				}
 				else if (tools[i][j] != 0 && tools[i][j] / 10 == 10) {
 					tempDir = tools[i][j] - 101;
 					tempDir *= 45;
-					drawReflector((800 - (3 - j) * 80) + 30, i * 80 + 50, tempDir + 22.5);
+					drawReflector((800 - (6 - j) * 25) + 2, i * 25 + 20, tempDir + 22.5);
 				}
 			}
 		}
-		for (int i = 1; i <= 4; i++) {
+		levelAmount = 5;
+		for (int i = 1; i <= levelAmount; i++) {
 			if (i <= maxLevel) {
-				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, RED);
+				DrawText(TextFormat("%d ", i), 800 - 460 + 80 * ((float)((float)(-levelAmount)/2) + i), 600 - 100, 80, RED);
 			}
 			else {
-				DrawText(TextFormat("%d ", i), 800 - 550 + 80 * (i - 1), 600 - 100, 80, BLACK);
+				DrawText(TextFormat("%d ", i), 800 - 460 + 80 * ((float)((float)(-levelAmount)/2) + i), 600 - 100, 80, BLACK);
 			}
 		}
 		if (cantWin == 0) {
@@ -265,11 +267,11 @@ int main() {
 			mousex = GetMouseY();
 			mousey -= 10;
 			mousex -= 10;
-			if (mod(mousex, 600) <= 320 && mod(mousey, 800) >= 540) {
-				mousey -= 540;
-				if (mousex / 80 >= 0 && mousex / 80 < 4 && mousey / 80 >= 0 && mousey / 80 < 3) {
-					mousex /= 80;
-					mousey /= 80;
+			if (mod(mousex, 600) <= 320 && mod(mousey, 800) >= 640) {
+				mousey -= 640;
+				if (mousex / 25 >= 0 && mousex / 25 < 4 && mousey / 25 >= 0 && mousey / 25 < 6) {
+					mousex /= 25;
+					mousey /= 25;
 					if (tools[mousex][mousey] != 0) {
 						pressed = 1;
 						draggedWhat = tools[mousex][mousey];
@@ -297,10 +299,10 @@ int main() {
 			if (pressed != 0) {
 				mousey -= 10;
 				mousex -= 10;
-				if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
-					mousey -= 540;
-					mousey /= 80;
-					mousex /= 80;
+				if (mousex / 25 >= 0 && mousex / 25 < 4 && (mousey - 640) / 25 >= 0 && (mousey - 640) / 25 < 6) {
+					mousey -= 640;
+					mousey /= 25;
+					mousex /= 25;
 					if (tools[mousex][mousey] == 0) {
 						tools[mousex][mousey] = draggedWhat;
 					}
@@ -338,8 +340,9 @@ int main() {
 				}
 				pressed = 0;
 			}
-			else if (mousex >= 500 && mousex <= 580 && mousey >= 250 && mousey <= 570) {
-				mousey -= 250;
+			else if (mousey >= 400 + 80 * (float)((float)(-levelAmount)/2) && mousey <= 400 + 80 * (float)((float)(levelAmount)/2) && mousex >= 500 && mousex <= 580) {
+			//else if (mousex >= 500 && mousex <= 580 && mousey >= 250 && mousey <= 570) {
+				mousey -= 400 + 80 * (float)((float)(-levelAmount)/2);
 				mousey /= 80;
 				mousey++;
 				if (mousey <= maxLevel) {
@@ -381,10 +384,10 @@ int main() {
 					board[mousex][mousey] += 101;
 				}
 			}
-			else if (mousex / 80 >= 0 && mousex / 80 < 4 && (mousey - 540) / 80 >= 0 && (mousey - 540) / 80 < 3) {
-				mousey -= 540;
-				mousey /= 80;
-				mousex /= 80;
+			else if (mousex / 25 >= 0 && mousex / 25 < 4 && (mousey - 640) / 25 >= 0 && (mousey - 640) / 25 < 6) {
+				mousey -= 640;
+				mousey /= 25;
+				mousex /= 25;
 				if (tools[mousex][mousey] != 0 && tools[mousex][mousey] <= 8) {
 					tools[mousex][mousey] %= 8;
 					tools[mousex][mousey]++;
@@ -400,14 +403,14 @@ int main() {
 	CloseWindow();
 }
 
-void init(int id, int board[15][15], int tool[4][3]) {
+void init(int id, int board[15][15], int tool[4][6]) {
 	for (int i = 0; i < 15; i++) {
 		for (int j = 0; j < 15; j++) {
 			board[i][j] = 0;
 		}
 	}
 	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 6; j++) {
 			tool[i][j] = 0;
 		}
 	}
@@ -437,6 +440,50 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		tool[0][2] = 1;
 	}
 	else if (id == 4) {
+		board[1][0] = 10;
+		for (int i = 0; i <= 11; i++) {
+			board[3][i] = 120;
+		}
+		for (int i = 2; i <= 11; i++) {
+			board[12][i] = 120;
+		}
+		for (int i = 2; i <= 8; i++) {
+			board[6][i] = 120;
+		}
+		for (int i = 4; i <= 8; i++) {
+			board[10][i] = 120;
+		}
+		for (int i = 4; i <= 6; i++) {
+			board[8][i] = 120;
+		}
+		for (int i = 3; i <= 12; i++) {
+			board[i][11] = 120;
+		}
+		for (int i = 6; i <= 12; i++) {
+			board[i][2] = 120;
+		}
+		for (int i = 6; i <= 10; i++) {
+			board[i][8] = 120;
+		}
+		board[9][4] = 120;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 6; j++) {
+				tool[i][j] = 101;
+			}
+		}
+		tool[3][0] = 101;
+		tool[0][0] = 1;
+		board[1][12] = 90;
+		board[2][13] = 90;
+		board[13][11] = 90;
+		board[14][7] = 90;
+		board[9][1] = 90;
+		board[5][2] = 90;
+		board[5][7] = 90;
+		board[8][10] = 90;
+		board[9][5] = 90;
+	}
+	else if (id == 5) {
 		board[7][0] = 13;
 		board[14][7] = 32;
 		board[7][14] = 51;
@@ -463,13 +510,13 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		tool[0][0] = 1;
 		tool[0][1] = 1;
 		tool[0][2] = 1;
+		tool[0][3] = 1;
+		tool[0][4] = 1;
+		tool[0][5] = 1;
 		tool[1][0] = 1;
-		tool[1][1] = 1;
-		tool[1][2] = 1;
-		tool[2][0] = 1;
-		tool[2][1] = 101;
-		tool[2][2] = 101;
-		tool[3][0] = 101;
+		tool[1][1] = 101;
+		tool[1][2] = 101;
+		tool[1][3] = 101;
 	}
 }
 
