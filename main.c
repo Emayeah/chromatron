@@ -498,21 +498,21 @@ int mod(int a, int b) {
 }
 
 void drawReflector(int y, int x, int dir) {
-	DrawRectanglePro((Rectangle){y, x, 20, 10}, (Vector2){10, 0}, 360 - dir, BLACK);
-	DrawRectanglePro((Rectangle){y, x, 30, 5}, (Vector2){15, 5}, 360 - dir, RED);
+	DrawRectanglePro((Rectangle){y, x, 8, 6}, (Vector2){4, 0}, 360 - dir, BLACK);
+	DrawRectanglePro((Rectangle){y, x, 16, 2}, (Vector2){8, 1}, 360 - dir, RED);
 }
 
 
 void drawMirror(int y, int x, int dir) {
-	DrawRectanglePro((Rectangle){y, x, 30, 10}, (Vector2){15, 5}, 360 - dir, BLACK);
-	DrawRectanglePro((Rectangle){y, x, 24, 5}, (Vector2){12, 5}, 360 - dir, RED);
+	DrawRectanglePro((Rectangle){y, x, 16, 4}, (Vector2){8, 2}, 360 - dir, BLACK);
+	DrawRectanglePro((Rectangle){y, x, 12, 2}, (Vector2){6, 2}, 360 - dir, RED);
 }
 
 void drawLaser(int y, int x, int id) {
 	Color colors[] = {RED, GREEN, BLUE, WHITE};
 	int dirx, diry;
 	getDir((id / 10 - 1), &dirx, &diry);
-	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 6, WHITE);
+	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 6, LIGHTGRAY);
 	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 3, colors[id % 10]);
-	DrawRectanglePro((Rectangle){y + 22, x + 22, 14, 4}, (Vector2){2, 2}, 360 - ((id / 10 - 1) * 45), WHITE);
+	DrawRectanglePro((Rectangle){y + 22, x + 22, 14, 4}, (Vector2){2, 2}, 360 - ((id / 10 - 1) * 45), LIGHTGRAY);
 }
