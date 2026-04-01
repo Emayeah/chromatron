@@ -257,6 +257,9 @@ int main() {
 				maxLevel++;
 			}
 		}
+		else if (maxLevel > currentLevel) {
+			DrawText("(won)", 360, 430, 20, BLACK);
+		}
 		if (IsMouseButtonPressed(0)) {
 			mousey = GetMouseX();
 			mousex = GetMouseY();
