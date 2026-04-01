@@ -26,7 +26,7 @@ int main() {
 	int index;
 	int flag2;
 	char *colorFlags;
-	int levelAmount;
+	int levelAmount = 6;
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -141,7 +141,11 @@ int main() {
 					DrawText("S", j * 25 + 16, i * 25 + 14, 20, colors[board[i][j] % 10]);
 				}
 				else if (board[i][j] == 120) {
-					DrawRectangle(j * 25 + 10, i * 25 + 10, 25, 25, LIGHTGRAY);
+					DrawRectangleLines(j * 25 + 10, i * 25 + 10, 23, 23, LIGHTGRAY);
+					DrawRectangleLines(j * 25 + 11, i * 25 + 11, 23, 23, BLACK);
+					DrawPixel(j * 25 + 33, i * 25 + 9, BLACK);
+					DrawPixel(j * 25 + 9, i * 25 + 33, BLACK);
+					DrawRectangle(j * 25 + 10, i * 25 + 10, 23, 23, GRAY);
 				}
 			}
 		}
@@ -245,7 +249,6 @@ int main() {
 				}
 			}
 		}
-		levelAmount = 5;
 		for (int i = 1; i <= levelAmount; i++) {
 			if (i <= maxLevel) {
 				DrawText(TextFormat("%d ", i), 800 - 460 + 80 * ((float)((float)(-levelAmount)/2) + i), 600 - 100, 80, RED);
@@ -267,8 +270,8 @@ int main() {
 			mousex = GetMouseY();
 			mousey -= 10;
 			mousex -= 10;
-			if (mod(mousex, 600) <= 320 && mod(mousey, 800) >= 640) {
-				mousey -= 640;
+			if (mod(mousex, 600) <= 320 && mod(mousey, 800) >= 625) {
+				mousey -= 625;
 				if (mousex / 25 >= 0 && mousex / 25 < 4 && mousey / 25 >= 0 && mousey / 25 < 6) {
 					mousex /= 25;
 					mousey /= 25;
@@ -440,6 +443,23 @@ void init(int id, int board[15][15], int tool[4][6]) {
 		tool[0][2] = 1;
 	}
 	else if (id == 4) {
+		for (int i = 0; i < 15; i++) {
+			board[i][0] = 120;
+			board[i][14] = 120;
+			board[0][i] = 120;
+			board[14][i] = 120;
+		}
+		board[1][3] = 70;
+		board[1][10] = 72;
+		board[10][5] = 90;
+		board[5][4] = 92;
+		board[3][7] = 92;
+		board[4][11] = 90;
+		tool[0][0] = 101;
+		tool[0][1] = 101;
+		tool[0][2] = 101;
+	}
+	else if (id == 5) {
 		board[1][0] = 10;
 		for (int i = 0; i <= 11; i++) {
 			board[3][i] = 120;
@@ -483,7 +503,7 @@ void init(int id, int board[15][15], int tool[4][6]) {
 		board[8][10] = 90;
 		board[9][5] = 90;
 	}
-	else if (id == 5) {
+	else if (id == 6) {
 		board[7][0] = 13;
 		board[14][7] = 32;
 		board[7][14] = 51;
