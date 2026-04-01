@@ -64,7 +64,7 @@ int main() {
 		}
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
-				if (mod(board[i][j] / 10 - 1, 10) < 8) {
+				if (board[i][j] / 10 <= 8 && board[i][j] >= 10) {
 					color = colors[board[i][j] % 10];
 					dir = board[i][j] / 10 - 1;
 					getDir(dir, &dirx, &diry);
@@ -136,6 +136,9 @@ int main() {
 				}
 				else if (board[i][j] / 10 == 9) {
 					DrawText("S", j * 25 + 16, i * 25 + 14, 20, colors[board[i][j] % 10]);
+				}
+				else if (board[i][j] == 120) {
+					DrawRectangle(j * 25 + 10, i * 25 + 10, 25, 25, LIGHTGRAY);
 				}
 			}
 		}
@@ -429,14 +432,39 @@ void init(int id, int board[15][15], int tool[4][3]) {
 		tool[0][2] = 1;
 	}
 	else if (id == 4) {
-		board[5][7] = 40;
-		board[2][3] = 40;
-		board[4][8] = 90;
-		board[9][8] = 90;
+		board[7][0] = 13;
+		board[14][7] = 32;
+		board[7][14] = 51;
+		board[0][7] = 70;
+		board[7][7] = 91;
+		board[7][9] = 90;
+		board[7][5] = 92;
+		board[7][4] = 93;
+		board[7][6] = 93;
+		board[7][8] = 93;
+		board[7][10] = 93;
+		board[4][5] = 120;
+		board[4][6] = 120;
+		board[4][8] = 120;
+		board[4][9] = 120;
+		board[10][5] = 120;
+		board[10][6] = 120;
+		board[10][8] = 120;
+		board[10][9] = 120;
+		board[9][6] = 120;
+		board[9][8] = 120;
+		board[5][6] = 120;
+		board[5][8] = 120;
 		tool[0][0] = 1;
 		tool[0][1] = 1;
 		tool[0][2] = 1;
-		tool[0][3] = 1;
+		tool[1][0] = 1;
+		tool[1][1] = 1;
+		tool[1][2] = 1;
+		tool[2][0] = 1;
+		tool[2][1] = 101;
+		tool[2][2] = 101;
+		tool[3][0] = 101;
 	}
 }
 
