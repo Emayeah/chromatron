@@ -7,6 +7,7 @@ void getDir(int, int*, int*);
 int mod(int, int);
 void drawMirror(int, int, int);
 void drawReflector(int, int, int);
+void drawLaser(int, int, int);
 
 int main() {
 	InitWindow(800, 600, "Chromatron");
@@ -65,6 +66,7 @@ int main() {
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				if (board[i][j] / 10 <= 8 && board[i][j] >= 10) {
+					drawLaser(j * 25, i * 25, board[i][j]);
 					color = colors[board[i][j] % 10];
 					dir = board[i][j] / 10 - 1;
 					getDir(dir, &dirx, &diry);
@@ -76,11 +78,11 @@ int main() {
 						posx += dirx;
 						posy += diry;
 						if (board[posx][posy] == 0) {
-							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (25 + 17.7f * ((dirx * dirx) == (diry * diry))), 2}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 1}, 360 - dir, color);
 							// true == 1, false == 0, if both are 1 then the line needs to be longer
 						}
 						else if (board[posx][posy] <= 8) {
-							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 2}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 1}, 360 - dir, color);
 							tempDir = board[posx][posy] - 1;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir) {
@@ -88,14 +90,14 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, color);
+								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 2}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 1}, 180 - dir, color);
 							}
 							else {
 								flag = 1;
 							}
 						}
 						else if (board[posx][posy] / 10 == 10) {
-							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 6}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 360 - dir, color);
+							DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry * diry))), 2}, (Vector2){12.5 + 8.84f * ((dirx * dirx) == (diry * diry)), 1}, 360 - dir, color);
 							tempDir = board[posx][posy] - 101;
 							dir /= 45;
 							if (mod(dir + 1, 8) == tempDir || mod(dir + 2, 8) == tempDir || mod(dir + 3, 8) == tempDir || mod(dir, 8) == tempDir) {
@@ -107,7 +109,7 @@ int main() {
 								dir = mod(dir, 8);
 								getDir(dir, &dirx, &diry);
 								dir *= 45;
-								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 6}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 3}, 180 - dir, color);
+								DrawRectanglePro((Rectangle){posy * 25 + 22, posx * 25 + 22, (12.5 + 8.84f * ((dirx * dirx) == (diry *  diry))), 2}, (Vector2){12.5f + 8.84f * ((dirx * dirx) == (diry * diry)), 1}, 180 - dir, color);
 							}
 							else {
 								flag = 1;
@@ -504,4 +506,13 @@ void drawReflector(int y, int x, int dir) {
 void drawMirror(int y, int x, int dir) {
 	DrawRectanglePro((Rectangle){y, x, 30, 10}, (Vector2){15, 5}, 360 - dir, BLACK);
 	DrawRectanglePro((Rectangle){y, x, 24, 5}, (Vector2){12, 5}, 360 - dir, RED);
+}
+
+void drawLaser(int y, int x, int id) {
+	Color colors[] = {RED, GREEN, BLUE, WHITE};
+	int dirx, diry;
+	getDir((id / 10 - 1), &dirx, &diry);
+	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 6, WHITE);
+	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 3, colors[id % 10]);
+	DrawRectanglePro((Rectangle){y + 22, x + 22, 14, 4}, (Vector2){2, 2}, 360 - ((id / 10 - 1) * 45), WHITE);
 }
