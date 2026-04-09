@@ -601,7 +601,7 @@ void konamiCheck(int *konami2) {
 			konami++;
 		}
 		else {
-			konami = 0;
+			konami = 1;
 		}
 	}
 	else if (IsKeyReleased(KEY_DOWN)) {
