@@ -23,10 +23,10 @@ int main() {
 	Color color;
 	Color colors[] = {RED, GREEN, BLUE, WHITE, PURPLE, SKYBLUE, YELLOW};
 	bool cantWin;
-	int index;
-	int flag2;
+	int index, flag2;
 	char *colorFlags;
 	int levelAmount = 6;
+	int konami = 0;
 	init(currentLevel, board, tools);
 	while (!WindowShouldClose()) {
 		BeginDrawing();
@@ -45,9 +45,6 @@ int main() {
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				DrawRectangleLines(j * 25 + 10, i * 25 + 10, 25, 25, BROWN);
-				if (board[i][j] / 10 == 9) {
-					maxStars++;
-				}
 			}
 		}
 		colorFlags = malloc(maxStars * sizeof(unsigned char) * 4);
@@ -344,7 +341,6 @@ int main() {
 				pressed = 0;
 			}
 			else if (mousey >= 400 + 80 * (float)((float)(-levelAmount)/2) && mousey <= 400 + 80 * (float)((float)(levelAmount)/2) && mousex >= 500 && mousex <= 580) {
-			//else if (mousex >= 500 && mousex <= 580 && mousey >= 250 && mousey <= 570) {
 				mousey -= 400 + 80 * (float)((float)(-levelAmount)/2);
 				mousey /= 80;
 				mousey++;
@@ -401,6 +397,52 @@ int main() {
 					tools[mousex][mousey] += 101;
 				}
 			}
+		}
+		if (IsKeyReleased(KEY_UP)) {
+			if (konami == 0 || konami == 1) {
+				konami++;
+			}
+			else {
+				konami = 0;
+			}
+		}
+		else if (IsKeyReleased(KEY_DOWN)) {
+			if (konami == 2 || konami == 3) {
+				konami++;
+			}
+			else {
+				konami = 0;
+			}
+		}
+		else if (IsKeyReleased(KEY_LEFT)) {
+			if (konami == 4 || konami == 6) {
+				konami++;
+			}
+			else {
+				konami = 0;
+			}
+		}
+		else if (IsKeyReleased(KEY_RIGHT)) {
+			if (konami == 5 || konami == 7) {
+				konami++;
+			}
+			else {
+				konami = 0;
+			}
+		}
+		else if (IsKeyReleased(KEY_B)) {
+			if (konami == 8) {
+				konami++;
+			}
+			else {
+				konami = 0;
+			}
+		}
+		else if (IsKeyReleased(KEY_A)) {
+			if (konami == 9) {
+				maxLevel = levelAmount;
+			}
+			konami = 0;
 		}
 	}
 	CloseWindow();
@@ -508,35 +550,26 @@ void init(int id, int board[15][15], int tool[4][6]) {
 		board[14][7] = 32;
 		board[7][14] = 51;
 		board[0][7] = 70;
+		board[7][5] = 92;
 		board[7][7] = 91;
 		board[7][9] = 90;
-		board[7][5] = 92;
-		board[7][4] = 93;
-		board[7][6] = 93;
-		board[7][8] = 93;
-		board[7][10] = 93;
-		board[4][5] = 120;
-		board[4][6] = 120;
-		board[4][8] = 120;
-		board[4][9] = 120;
-		board[10][5] = 120;
-		board[10][6] = 120;
-		board[10][8] = 120;
-		board[10][9] = 120;
-		board[9][6] = 120;
-		board[9][8] = 120;
-		board[5][6] = 120;
-		board[5][8] = 120;
-		tool[0][0] = 1;
-		tool[0][1] = 1;
-		tool[0][2] = 1;
-		tool[0][3] = 1;
+		for (int i = 4; i <= 10; i+=2) {
+			board[7][i] = 93;
+		}
+		for (int i = 5; i <= 9; i++) {
+			board[4][i] = 120;
+			board[10][i] = 120;
+		}
+		for (int i = 6; i <= 8; i+=2) {
+			board[9][i] = 120;
+			board[5][i] = 120;
+		}
+		for (int i = 0; i <= 3; i++) {
+			tool[0][i] = 1;
+			tool[1][i] = 1;
+		}
 		tool[0][4] = 1;
 		tool[0][5] = 1;
-		tool[1][0] = 1;
-		tool[1][1] = 101;
-		tool[1][2] = 101;
-		tool[1][3] = 101;
 	}
 }
 
