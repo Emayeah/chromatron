@@ -8,6 +8,9 @@ int mod(int, int);
 void drawMirror(int, int, int);
 void drawReflector(int, int, int);
 void drawLaser(int, int, int);
+void drawWall(int, int);
+int colorCombination(int[15][15], unsigned char[]);
+void konamiCheck(int*);
 
 int main() {
 	InitWindow(800, 600, "Chromatron");
@@ -137,86 +140,13 @@ int main() {
 				else if (board[i][j] / 10 == 9) {
 					DrawText("S", j * 25 + 16, i * 25 + 14, 20, colors[board[i][j] % 10]);
 				}
-				else if (board[i][j] == 120) {
-					DrawRectangleLines(j * 25 + 10, i * 25 + 10, 23, 23, LIGHTGRAY);
-					DrawRectangleLines(j * 25 + 11, i * 25 + 11, 23, 23, BLACK);
-					DrawPixel(j * 25 + 33, i * 25 + 9, BLACK);
-					DrawPixel(j * 25 + 9, i * 25 + 33, BLACK);
-					DrawRectangle(j * 25 + 10, i * 25 + 10, 23, 23, GRAY);
+				else if (board[i][j] == 120) { // wall
+					drawWall(i, j);
 				}
 			}
 		}
 		index = 0;
-		cantWin = 0;
-		for (int i = 0; i < 15 && cantWin == 0; i++) {
-			for (int j = 0; j < 15 && cantWin == 0; j++) {
-				if (board[i][j] / 10 == 9) {
-					if (
-						board[i][j] % 10 == 0 &&
-						colorFlags[index * 4] == 1 &&
-						colorFlags[index * 4 + 1] == 0 &&
-						colorFlags[index * 4 + 2] == 0 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 1 &&
-						colorFlags[index * 4] == 0 &&
-						colorFlags[index * 4 + 1] == 1 &&
-						colorFlags[index * 4 + 2] == 0 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 2 &&
-						colorFlags[index * 4] == 0 &&
-						colorFlags[index * 4 + 1] == 0 &&
-						colorFlags[index * 4 + 2] == 1 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 3 &&
-						((
-						colorFlags[index * 4] == 1 &&
-						colorFlags[index * 4 + 1] == 1 &&
-						colorFlags[index * 4 + 2] == 1
-						) ||
-						colorFlags[index * 4 + 3] == 1
-						)
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 4 &&	// purple
-						colorFlags[index * 4] == 1 &&
-						colorFlags[index * 4 + 1] == 0 &&
-						colorFlags[index * 4 + 2] == 1 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 5 &&	// cyan
-						colorFlags[index * 4] == 0 &&
-						colorFlags[index * 4 + 1] == 1 &&
-						colorFlags[index * 4 + 2] == 1 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else if (
-						board[i][j] % 10 == 6 &&	// yellow
-						colorFlags[index * 4] == 1 &&
-						colorFlags[index * 4 + 1] == 1 &&
-						colorFlags[index * 4 + 2] == 0 &&
-						colorFlags[index * 4 + 3] == 0
-					) {
-					}
-					else {
-						cantWin = 1;
-					}
-					index++;
-				}
-			}
-		}
+		cantWin = colorCombination(board, colorFlags);
 		free(colorFlags);
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
@@ -398,50 +328,9 @@ int main() {
 				}
 			}
 		}
-		if (IsKeyReleased(KEY_UP)) {
-			if (konami == 0 || konami == 1) {
-				konami++;
-			}
-			else {
-				konami = 0;
-			}
-		}
-		else if (IsKeyReleased(KEY_DOWN)) {
-			if (konami == 2 || konami == 3) {
-				konami++;
-			}
-			else {
-				konami = 0;
-			}
-		}
-		else if (IsKeyReleased(KEY_LEFT)) {
-			if (konami == 4 || konami == 6) {
-				konami++;
-			}
-			else {
-				konami = 0;
-			}
-		}
-		else if (IsKeyReleased(KEY_RIGHT)) {
-			if (konami == 5 || konami == 7) {
-				konami++;
-			}
-			else {
-				konami = 0;
-			}
-		}
-		else if (IsKeyReleased(KEY_B)) {
-			if (konami == 8) {
-				konami++;
-			}
-			else {
-				konami = 0;
-			}
-		}
-		else if (IsKeyReleased(KEY_A)) {
-			if (konami == 9) {
-				maxLevel = levelAmount;
-			}
+		konamiCheck(&konami);
+		if (konami >= 10) {
+			maxLevel = levelAmount + 1;
 			konami = 0;
 		}
 	}
@@ -560,16 +449,19 @@ void init(int id, int board[15][15], int tool[4][6]) {
 			board[4][i] = 120;
 			board[10][i] = 120;
 		}
+		board[4][7] = 0;
+		board[10][7] = 0;
 		for (int i = 6; i <= 8; i+=2) {
 			board[9][i] = 120;
 			board[5][i] = 120;
 		}
 		for (int i = 0; i <= 3; i++) {
 			tool[0][i] = 1;
-			tool[1][i] = 1;
+			tool[1][i] = 101;
 		}
 		tool[0][4] = 1;
 		tool[0][5] = 1;
+		tool[1][0] = 1;
 	}
 }
 
@@ -618,4 +510,139 @@ void drawLaser(int y, int x, int id) {
 	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 6, LIGHTGRAY);
 	DrawCircle(y + 22 - (5 * diry), x + 22 - (5 * dirx), 3, colors[id % 10]);
 	DrawRectanglePro((Rectangle){y + 22, x + 22, 14, 4}, (Vector2){2, 2}, 360 - ((id / 10 - 1) * 45), LIGHTGRAY);
+}
+
+int colorCombination(int board[15][15], unsigned char colorFlags[]) {
+	int index = 0;
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 15; j++) {
+			if (board[i][j] / 10 == 9) {
+				if (
+					board[i][j] % 10 == 0 &&
+					colorFlags[index * 4] == 1 &&
+					colorFlags[index * 4 + 1] == 0 &&
+					colorFlags[index * 4 + 2] == 0 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 1 &&
+					colorFlags[index * 4] == 0 &&
+					colorFlags[index * 4 + 1] == 1 &&
+					colorFlags[index * 4 + 2] == 0 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 2 &&
+					colorFlags[index * 4] == 0 &&
+					colorFlags[index * 4 + 1] == 0 &&
+					colorFlags[index * 4 + 2] == 1 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 3 &&
+					((
+					colorFlags[index * 4] == 1 &&
+					colorFlags[index * 4 + 1] == 1 &&
+					colorFlags[index * 4 + 2] == 1
+					) ||
+					colorFlags[index * 4 + 3] == 1
+					)
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 4 &&	// purple
+					colorFlags[index * 4] == 1 &&
+					colorFlags[index * 4 + 1] == 0 &&
+					colorFlags[index * 4 + 2] == 1 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 5 &&	// cyan
+					colorFlags[index * 4] == 0 &&
+					colorFlags[index * 4 + 1] == 1 &&
+					colorFlags[index * 4 + 2] == 1 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else if (
+					board[i][j] % 10 == 6 &&	// yellow
+					colorFlags[index * 4] == 1 &&
+					colorFlags[index * 4 + 1] == 1 &&
+					colorFlags[index * 4 + 2] == 0 &&
+					colorFlags[index * 4 + 3] == 0
+				) {
+				}
+				else {
+					return 1;
+				}
+				index++;
+			}
+		}
+	}
+	return 0;
+}
+
+void drawWall(int i, int j) {
+	DrawRectangleLines(j * 25 + 10, i * 25 + 10, 23, 23, LIGHTGRAY);
+	DrawRectangleLines(j * 25 + 11, i * 25 + 11, 23, 23, BLACK);
+	DrawPixel(j * 25 + 33, i * 25 + 9, BLACK);
+	DrawPixel(j * 25 + 9, i * 25 + 33, BLACK);
+	DrawRectangle(j * 25 + 10, i * 25 + 10, 23, 23, GRAY);
+}
+
+void konamiCheck(int *konami2) {
+	int konami = *konami2;
+	if (IsKeyReleased(KEY_UP)) {
+		if (konami == 0 || konami == 1) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	else if (IsKeyReleased(KEY_DOWN)) {
+		if (konami == 2 || konami == 3) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	else if (IsKeyReleased(KEY_LEFT)) {
+		if (konami == 4 || konami == 6) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	else if (IsKeyReleased(KEY_RIGHT)) {
+		if (konami == 5 || konami == 7) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	else if (IsKeyReleased(KEY_B)) {
+		if (konami == 8) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	else if (IsKeyReleased(KEY_A)) {
+		if (konami == 9) {
+			konami++;
+		}
+		else {
+			konami = 0;
+		}
+	}
+	*konami2 = konami;
 }
